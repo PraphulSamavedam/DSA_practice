@@ -1,3 +1,5 @@
+from collections import deque
+
 # class LinkedinList():
 #     class Node():
 #         def __init__(self, value):
@@ -67,7 +69,7 @@ class BTree():
 
 
 class Stack():
-    """Stack is dynamic data structure which implements LIFO, Last in First Out"""
+    """Stack is dynamic linear data structure which implements LIFO, Last in First Out"""
 
     def __init__(self) -> None:
         """Initializes an empty stack i.e. size = 0"""
@@ -77,9 +79,9 @@ class Stack():
     def getSize(self) -> int:
         return self.size
 
-    def push(self, object) -> None:
+    def push(self, other: object) -> None:
         """Pushes the element onto the top of the stack"""
-        self.lst.append(object)
+        self.lst.append(other)
         self.size += 1
 
     def pop(self) -> object:
@@ -111,3 +113,96 @@ class Stack():
     def getStackStatus(self):
         """prints the status of the stack with length and the element on the top."""
         print("Length of the stack is {0}\n With element on the top as {1}".format({0: self.getSize(), 1: self.peek()}))
+
+class Queue():
+    """Queue is a dynamic linear data structure which implements the FIFO First In First Out
+    \n **Desired features and Time Complexty**\n
+    \n\tEnqueue -> O(1)
+    \n\tDequeue -> O(1)
+    \n\tFront -> O(1)
+    \n\tRear _> O(1)
+    """
+    def __init__(self):
+        """Using the collections.deque we can achieve the desired results"""
+        self._queue = deque()
+
+    def enqueue(self, other: object) -> None:
+        """Adds an element to the queue at the reae end\n :inplace = True"""
+        self._queue.append(other)
+
+    def getSize(self):
+        """:returns size of the queue"""
+        return len(self._queue)
+
+    def isEmpty(self):
+        """:returns whether the queue is empty or not"""
+        return True if self.getSize() == 0 else False
+
+    def dequeue(self):
+        """Removes an element from the front of the queue\n :inplace= True"""
+        if self.isEmpty():
+            raise Exception("Empty Queue, cannot remove element")
+        else:
+            self._queue.popleft()
+
+    def front(self):
+        """:returns the element present at the front of the queue\n This is the first element removed from the queue
+        when dequeue() method is run"""
+        if self.isEmpty():
+            print("Empty queue")
+            return None
+        else:
+            return self._queue[0]
+
+    def rear(self):
+        """:returns the element present at the rear end of the queue \n This is the last element added to the queue
+        which was added when enqueue(other) was run"""
+        if self.isEmpty():
+            print("Empty queue")
+            return None
+        else:
+            return self._queue[-1]
+
+    def __str__(self):
+        if self.isEmpty():
+            return None
+        else:
+            return str(self._queue)
+
+
+
+
+''' Array based implementation
+    # Drawback: Enqueue and Dequeue methods implemented take O(n) instead of O(1)
+    # Commented out for this purpose
+    def __init__(self):
+        self.queue = list()
+
+    def enqueue(self, other: object)-> None:
+        """Adds an element at the rear end of the queue"""
+        self.queue.append(other)
+
+    def getSize(self):
+        """:returns length of the queue"""
+        return len(self.queue)
+
+    def isEmpty(self):
+        """:returns True if the queue is empty"""
+        return  True if self.getSize() == 0 else False
+
+    def dequeue(self):
+        """Removes the element at the front of the queue
+        :raises Exception if the queue is empty"""
+        if self.isEmpty():
+            raise Exception("Empty Queue, undeflow condition")
+        else:
+            self.queue.pop(0)
+
+    def rear(self):
+        """;:returns the element at the end\nThis is the latest element added to the queue"""
+        return self.queue[-1]
+
+    def front(self):
+        """:returns the front element of the queue\n This is the next element which will be removed"""
+        return self.queue[0]
+'''
