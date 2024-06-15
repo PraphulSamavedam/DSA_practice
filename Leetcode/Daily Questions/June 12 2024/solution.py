@@ -1,8 +1,9 @@
 from typing import List
+from copy import deepcopy
 
 
 class Solution:
-    def sortColors(self, nums: List[int]) -> None:
+    def countSortColors(self, nums: List[int]) -> None:
         """
         Do not return anything, modify nums in-place instead.
 
@@ -32,6 +33,34 @@ class Solution:
             else:
                 nums[indx] = 2
 
+    def three_pointer_sort(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+
+        Time Complexity: O(n)
+        Space Complexity: O(1)
+        Approach: Three pointer sorting
+        Notes: Single pass
+        """
+        n = len(nums)
+        left, right = -1, n
+        idx = 0
+        while left <= right and idx < n:
+            swap = False
+            if nums[idx] == 0:
+                if idx > left:
+                    # Swap the left and idx values
+                    nums[idx], nums[left + 1] = nums[left + 1], nums[idx]
+                    left += 1
+                    swap = True
+            elif nums[idx] == 2:
+                if idx < right:
+                    nums[idx], nums[right - 1] = nums[right - 1], nums[idx]
+                    right -= 1
+                    swap = True
+            if not swap:
+                idx += 1
+
     def testCases(self):
         """ This method has all the test cases along with desired answers"""
         numbers = [
@@ -58,9 +87,20 @@ class Solution:
         ]
         soln_results = []
         test_fail = []
-        for indx, num in enumerate(numbers):
-            self.sortColors(num)
-            test_fail.append(num == results[indx])
+
+        print("Counting Sort results")
+        for index, num in enumerate(deepcopy(numbers)):
+            self.countSortColors(num)
+            test_fail.append(num == results[index])
+            soln_results.append(num)
+        self.print_results(results, soln_results, test_fail)
+        test_fail.clear()
+        soln_results.clear()
+
+        print("Three pointer results")
+        for index, num in enumerate(deepcopy(numbers)):
+            self.three_pointer_sort(num)
+            test_fail.append(num == results[index])
             soln_results.append(num)
         return results, soln_results, test_fail
 
@@ -79,6 +119,7 @@ class Solution:
     def test(self):
         expected, results, success = self.testCases()
         self.print_results(expected, results, success)
+
 
 if __name__ == "__main__":
     soln = Solution()
