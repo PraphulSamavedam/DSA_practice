@@ -1,94 +1,61 @@
-from typing import List
+import math
 
 
 class Solution:
 
-    def brute_force_approach(self, nums: List[int], n: int) -> int:
+    def linear_approach(self, n: int) -> bool:
         """
-        Brute Force Approach
-        Time Complexity: O(n * len(nums))
-        Space Complexity: O(n)
-        Failed: Due to Memory Limit
-        Will fail for the last test case of this file.
+        Returns True only if the number can be decomposed as sum of squares
+        of two whole numbers.
+
+
+        Approach: HashSet based
+        Time Complexity: O(sqrt(n))
+        Space Complexity: O(sqrt(n))
         """
+        limit = int(math.sqrt(n)) + 1
+        memory = set()
+        for x in range(limit):
+            if (n - (x*x) in memory) or (n == (2*x*x)):
+                return True
+            memory.add(x*x)
+        return False
 
-        def fill_boolean(boolean: List[bool], n: int, num: int):
-            for idx in range(n, -1, -1):
-                # print(f"x: {boolean[idx]}, ix:{idx}, num: {num}")
-                if boolean[idx] and idx + num <= n:
-                    boolean[idx + num] = True
-            return boolean
-
-        boolean = [False for _ in range(n + 1)]
-        boolean[0] = True
-
-        for num in nums:
-            boolean = fill_boolean(boolean, n, num)
-        result = 0
-        while not all(boolean):
-            for ix in range(n):
-                if not boolean[ix]:
-                    num = ix
-                    result += 1
-                    break
-            # print(f"Pre fill: {boolean}")
-            boolean = fill_boolean(boolean, n, num)
-            # print(f"Post fill boolean: {boolean}")
-        return result
-
-    def optimized_approach(self, nums: List[int], n: int) -> int:
+    def optimized_approach(self, n: int) -> bool:
         """
-        Time Complexity: O(n)
+        Returns True only if the number can be decomposed as sum of squares
+        of two whole numbers based on two pointer approach
+
+        Approach: HashSet based
+        Time Complexity: O(sqrt(n))
         Space Complexity: O(1)
         """
-        rng = [0, 0]
-        patches = 0
-        for ix, num in enumerate(nums):
-            if num > rng[1] + 1:
-                # Add the patching
-                while num > rng[1] + 1:
-                    patch = rng[1] + 1
-                    rng[1] += patch
-                    patches += 1
+        lt = 0
+        rt = int(math.sqrt(n)) + 1
 
-                    # Return if we have reached required target
-                    if rng[1] >= n:
-                        return patches
+        while lt <= rt:
+            val = (lt*lt) + (rt*rt)
+            if val == n:
+                return True
+            elif val < n:
+                lt += 1
+            else:
+                rt -= 1
 
-                # print(f"Post Patching: {rng}")
-            rng[1] += num
-            # print(f"Adding the number as patch: {rng}")
-            if rng[1] >= n:
-                return patches
-
-        # Add additional patches post exhausting all the options provided
-        while rng[1] < n:
-            patch = rng[1] + 1
-            rng[1] += patch
-            patches += 1
-        return patches
+        return False
 
     def testCases(self):
         """ This method has all the test cases along with desired answers"""
-        n_inps = [6, 20, 5, 20, 52
-                  , 2147483647
-                  ]
-        nums_inps = [
-            [1, 3], [1, 5, 10], [1, 2, 2],
-            [1, 2, 2, 6, 34, 38, 41, 44, 47, 47, 56, 59, 62, 73, 77, 83, 87,
-             89, 94], [1, 2, 2, 6, 34, 38]
-            , [1, 2, 31, 33]
-        ]
-        results = [1, 2, 0, 1, 2
-                   , 28
-                   ]
+        n_inps = [1, 5, 29, 64, 13, 2, 3, 17, 9, 102657424, 102746825,
+                  104344825, 2147483647, 268435481]
+        results = [True, True, True, True, True, True, False, True, True,
+                   True, True, True, False, True]
         soln_results = []
         test_fail = []
 
         # Brute Force approach
         for indx, _ in enumerate(n_inps):
-            soln_result = self.brute_force_approach(nums=nums_inps[indx],
-                                                    n=n_inps[indx])
+            soln_result = self.linear_approach(n=n_inps[indx])
             test_fail.append(soln_result == results[indx])
             soln_results.append(soln_result)
         print(f"Brute Force Approach")
@@ -97,13 +64,12 @@ class Solution:
         test_fail.clear()
 
         # Optimal approach
-        for indx, _ in enumerate(nums_inps):
-            soln_result = self.optimized_approach(nums=nums_inps[indx],
-                                                  n=n_inps[indx])
+        for indx, _ in enumerate(n_inps):
+            soln_result = self.optimized_approach(n=n_inps[indx])
             test_fail.append(soln_result == results[indx])
             soln_results.append(soln_result)
         print(f"Optimal Approach")
-        return results, soln_result, test_fail
+        return results, soln_results, test_fail
 
     def test(self):
         expected, results, success = self.testCases()
