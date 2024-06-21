@@ -28,7 +28,7 @@ class Solution {
         }
         return ans;
     }
-    
+
     public int maxDistance(int[] position, int m) {
         Arrays.sort(position);
         int result = -1;
