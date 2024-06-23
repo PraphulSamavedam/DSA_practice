@@ -9,86 +9,103 @@ class Solution:
 
     def brute_approach(self, nums: List[int], k: int) -> int:
         """
-        Time complexity: O(n * n ) where n = len(nums) = len(grumpy)
+        Time complexity: O(n * n ) where n = len(nums)
         Space complexity: O(1)
+        Cons: TLE
         """
-
         result = 0
-        pass
+        for st in range(len(nums)):
+            for ed in range(st + k - 1, len(nums)):
+                cnt = 0
+                it = st
+                while it <= ed:
+                    if nums[it] % 2:
+                        cnt += 1
+                    it += 1
+                if cnt == k:
+                    result += 1
+        return result
 
     def optimal_approach(self, nums: List[int], k: int) -> int:
         """
-        This method uses sliding window approach
+        This method uses sliding window approach with three pointers
         Time complexity: O(n)
         Space complexity: O(1)
         """
-        lt = 0
+        l, m = 0, 0
+        odd = 0
         result = 0
-        window, max_window = 0, 0
-        for rt in range(len(nums)):
-            if grumpy[rt] == 0:
-                result += nums[rt]
-            else:
-                window += nums[rt]
-            if rt - lt + 1 > k:
-                if grumpy[lt]:
-                    window -= nums[lt]
-                lt += 1
-            max_window = max(max_window, window)
-        return max_window + result
+        for r in range(len(nums)):
+            odd += nums[r] % 2
 
-    def my_approach(self, customers, grumpy, minutes) -> int:
+            while odd > k:
+                if nums[l] % 2:
+                    odd -= 1
+                l += 1
+                m = l
+
+            if odd == k:
+                while not nums[m] % 2:
+                    m += 1
+                result += (m - l) + 1
+        return result
+
+    def my_approach(self, nums: List[int], k: int) -> int:
         """
         Approach: Sliding window approach
         Time Complexity: O(n)
         Space Complexity: O(1)
         """
+        lt = 0
+        rt = 0
+        odd = 0
+        support = 1
         result = 0
-        cnt = 0
-        for indx in range(len(customers)):
-            if grumpy[indx]:
-                grumpy[indx] = customers[indx]
-            else:
-                result += customers[indx]
-            cnt += 1
 
-        st = 0
-        ed = st + minutes - 1
-        r_sum = 0
+        while rt < len(nums):
+            odd += nums[rt] % 2
 
-        for x in range(ed):
-            r_sum += grumpy[x]
-        max_unlock = r_sum
+            if odd == k:
+                # There are k odd numbers in window
 
-        while ed < cnt:
-            r_sum += grumpy[ed]
-            max_unlock = max(max_unlock, r_sum)
-            r_sum -= grumpy[st]
-            st += 1
-            ed += 1
+                # Is lt pointing to odd or even ?
+                if nums[lt] % 2 == 0:
+                    support = 1
+                    while nums[lt] % 2 == 0:
+                        support += 1
+                        lt += 1
+                    # Now lt should point to odd number
+                # else: # lt point towards odd number
+                result += support
+            elif odd > k:
+                # We ensured that lt points to odd number when odd == k
+                lt += 1
+                odd -= 1
 
-        return result + max_unlock
+                # Update support
+                support = 1
+                while nums[lt] % 2 == 0:
+                    support += 1
+                    lt += 1
+                result += support
+            rt += 1
+        return result
 
     def testCases(self):
         """ This method has all the test cases along with desired answers"""
-        customers_inps = [[1, 0, 1, 2, 1, 1, 7, 5], [1],
-                          [26, 1, 100, 4, 300, 22], [26, 1, 100, 4, 300, 22],
-                          [20, 25, 20, 40, 75, 35, 20, 45, 25, 10, 25],
-                          [10000, 10001]]
-        grumpy_inps = [[1, 0, 1, 0, 1, 1, 0, 0], [0],
-                       [0, 1, 0, 0, 0, 1], [0, 1, 0, 0, 0, 1],
-                       [0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-                       [1, 1]]
-        minutes_inps = [2, 1, 1, 5, 4, 2]
-        results = [16, 1, 452, 453, 290, 20001]
+        nums_inps = [[1, 1, 2, 1, 1], [2, 4, 6], [2, 4, 6],
+                     [2, 2, 2, 1, 2, 2, 1, 2, 2, 2],
+                     [2, 23, 92, 3, 4, 1, 20, 1, 4129, 8192, 7861, 2342]]
+        k_inps = [3, 1, 5, 2, 2, 3]
+        results = [2, 0, 0, 16, 16, 14]
         soln_results = []
         test_fail = []
 
         # Brute Force approach
         print(f"Brute Force Approach")
-        for indx, _ in enumerate(customers_inps):
-            soln_result = self.brute_approach(nums=customers_inps[indx],
-                                              k=minutes_inps[indx])
+        for indx, _ in enumerate(nums_inps):
+            soln_result = self.brute_approach(nums=nums_inps[indx],
+                                              k=k_inps[indx])
             test_fail.append(soln_result == results[indx])
             soln_results.append(soln_result)
         self.print_results(results, soln_results, test_fail)
@@ -97,10 +114,9 @@ class Solution:
 
         # My approach
         print(f"My Approach")
-        for indx, _ in enumerate(customers_inps):
-            soln_result = self.my_approach(customers=customers_inps[indx],
-                                           grumpy=grumpy_inps[indx],
-                                           minutes=minutes_inps[indx])
+        for indx, _ in enumerate(nums_inps):
+            soln_result = self.my_approach(nums=nums_inps[indx],
+                                           k=k_inps[indx])
             test_fail.append(soln_result == results[indx])
             soln_results.append(soln_result)
         self.print_results(results, soln_results, test_fail)
@@ -109,9 +125,9 @@ class Solution:
 
         # Optimal approach
         print(f"Optimal Approach")
-        for indx, _ in enumerate(customers_inps):
-            soln_result = self.optimal_approach(nums=customers_inps[indx],
-                                                k=minutes_inps[indx])
+        for indx, _ in enumerate(nums_inps):
+            soln_result = self.optimal_approach(nums=nums_inps[indx],
+                                                k=k_inps[indx])
             test_fail.append(soln_result == results[indx])
             soln_results.append(soln_result)
         return results, soln_results, test_fail
